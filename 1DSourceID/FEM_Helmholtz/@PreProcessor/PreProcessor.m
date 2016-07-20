@@ -42,7 +42,7 @@ classdef PreProcessor < handle
            L = PreProcessorObject.Length;
            PreProcessorObject.ForceMesh.generateMesh(L, nelems);
         end
-        function setForceFunction(PreProcessorObject, forceFun)
+        function setForceFunction(PreProcessorObject, forceFun, frequency)
             % test if there is a force mesh. If not, use domain mesh
             loadCoords = PreProcessorObject.ForceMesh.getCoordinates();
             if (isempty(loadCoords))
@@ -50,7 +50,7 @@ classdef PreProcessor < handle
             end
             PreProcessorObject.forceLocations=1:1:length(loadCoords);
             PreProcessorObject.forceMagnitude = ...
-                 forceFun(loadCoords);
+                 forceFun(loadCoords, frequency);
         end
         
         function setForceMagnitudeAndLocations(PreProcessorObject,...

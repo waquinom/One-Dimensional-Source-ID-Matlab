@@ -1,7 +1,7 @@
-function [nodalForces] = getSinusoidalForces(locations)
+function [nodalForces] = getSinusoidalForces(locations, frequency)
 %
 %
 %
-nodalForces = sin(2*3*pi*locations);
+nodalForces = sin(2*frequency*pi*locations);
 
 end

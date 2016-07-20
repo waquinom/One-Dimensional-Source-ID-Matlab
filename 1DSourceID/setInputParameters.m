@@ -7,21 +7,22 @@
 function setInputParameters()
 global L A E freqs rho  constraints ...
  meaLocations nelemns forceGenerator noiselevel eigenvalsFrac solutionMethod pcgIters ...
- pcgTol tikhonovPar regularizationOperator sourceElements
+ pcgTol tikhonovPar regularizationOperator sourceElements sourceFrequency
 
 %***********************Forward Problem to Create Data*******
 L = 1;
-nelemns = 2000;
+nelemns = 500;
 E = 1;
 A = 1;
-freqs = [15];
+freqs = [5];
 rho = 1;
-sourceElements = 1000;
+sourceElements = 10;
+sourceFrequency = 1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 solutionMethod = {'direct'}; %'svd', 'direct' or 'pcg' are the options
 pcgIters = 2000;
 pcgTol =1e-8;
-tikhonovPar = 1e-15;
+tikhonovPar = 1e-12;
 regularizationOperator={'H1'}; %H1 or L2
  eigenvalsFrac = 15; %number of eigenvalues to use 
                     %in the pseudoinverse

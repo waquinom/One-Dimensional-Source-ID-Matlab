@@ -8,13 +8,14 @@ clear all
 close all
 
 global L A E freqs rho  constraints ...
-    meaLocations nelemns forceGenerator noiselevel sourceElements
+    meaLocations nelemns forceGenerator noiselevel sourceElements ...
+    sourceFrequency
 
 % Conctruct data
 setInputParameters();
 % Preprocessor. Mesh is generated here
 FEModel = PreProcessor(L, nelemns, E, A, freqs, rho, constraints);
-FEModel.setForceFunction(forceGenerator);
+FEModel.setForceFunction(forceGenerator, sourceFrequency);
 udata = generateData(noiselevel, FEModel, meaLocations);
  x = FEModel.getNodalCoord();
  utrue = solveForwardProblem(FEModel, 1);
@@ -22,7 +23,7 @@ udata = generateData(noiselevel, FEModel, meaLocations);
 
 
 FEModel.generateForceMesh(sourceElements);
-FEModel.setForceFunction(forceGenerator);
+FEModel.setForceFunction(forceGenerator, sourceFrequency);
 FEModel.createForceMassMatrix();
 fsol = solveIP(udata, FEModel);
 
