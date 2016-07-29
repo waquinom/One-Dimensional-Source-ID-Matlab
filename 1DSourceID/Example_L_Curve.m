@@ -10,7 +10,7 @@ close all
 
 global L A E freqs rho  constraints ...
     meaLocations nelemns forceGenerator noiselevel  solutionMethod ...
-     pcgIters pcgTol tikhonovPar
+    tikhonovPar  sourceElements sourceFrequency
 
 % This script is used to construct the L curve for the source ID problem.
 %The point of maximum curvature indicates the optimal regularization parameter.
@@ -19,16 +19,28 @@ global L A E freqs rho  constraints ...
 % Consctruct data
 setInputParameters();
 
-solutionMethod = {'pcg'};
-pcgIters = 1000;
-pcgTol =1e-8;
-noiselevel = 1e-1;
+nelemns = 100;
+freqs = [1];
+sourceElements = 100;
+sourceFrequency = 1;
+
+solutionMethod = {'direct'};
 tikhonov=[0:0.5:12];
 
 % Preprocessor. Mesh is generated here
+% Preprocessor. Mesh is generated here
 FEModel = PreProcessor(L, nelemns, E, A, freqs, rho, constraints);
-FEModel.setForceFunction(forceGenerator);
+FEModel.setForceFunction(forceGenerator, sourceFrequency);
 udata = generateData(noiselevel, FEModel, meaLocations);
+ x = FEModel.getNodalCoord();
+ utrue = solveForwardProblem(FEModel, 1);
+ ftrue = FEModel.forceMagnitude;
+
+
+FEModel.generateForceMesh(sourceElements);
+FEModel.setForceFunction(forceGenerator, sourceFrequency);
+FEModel.createForceMassMatrix();
+
 
 for i=1:length(tikhonov)
     tikhonovPar =10^(-tikhonov(i));

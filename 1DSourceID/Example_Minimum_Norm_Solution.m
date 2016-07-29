@@ -10,7 +10,7 @@ close all
 
 global L A E freqs rho  constraints ...
     meaLocations nelemns forceGenerator noiselevel  solutionMethod ...
-     pcgIters pcgTol tikhonovPar
+     tikhonovPar sourceElements sourceFrequency
 
 % This script shows how the solution converges as the tikonov parameter
 % decreases for the case of zero noise. The inverse  problem solution 
@@ -18,17 +18,25 @@ global L A E freqs rho  constraints ...
 
 % Consctruct data
 setInputParameters();
-solutionMethod = {'pcg'};
-pcgIters = 1000;
-pcgTol =1e-8;
-noiselevel = 1e-3;
-tikhonov=[0:1:18];
+nelemns = 100;
+freqs = [1];
+sourceElements = 100;
+sourceFrequency = 1;
+solutionMethod = {'direct'};
+noiselevel = 0;
+tikhonov=[0:1:15];
 
-% Preprocessor. Mesh is generated here
 FEModel = PreProcessor(L, nelemns, E, A, freqs, rho, constraints);
-FEModel.setForceFunction(forceGenerator);
+FEModel.setForceFunction(forceGenerator, sourceFrequency);
 udata = generateData(noiselevel, FEModel, meaLocations);
+ x = FEModel.getNodalCoord();
+ utrue = solveForwardProblem(FEModel, 1);
+ ftrue = FEModel.forceMagnitude;
 
+
+FEModel.generateForceMesh(sourceElements);
+FEModel.setForceFunction(forceGenerator, sourceFrequency);
+FEModel.createForceMassMatrix();
 
 
 for i=1:length(tikhonov)

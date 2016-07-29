@@ -10,7 +10,7 @@ close all
 
 global L A E freqs rho  constraints ...
     meaLocations nelemns forceGenerator noiselevel pcgTol solutionMethod...
-    tikhonovPar
+    tikhonovPar  sourceElements sourceFrequency
 
 % This script plots the error in solution versus the tolerance of conjugate
 % gradient. Notice that there is an optimal tolerance  that produces a 
@@ -18,13 +18,27 @@ global L A E freqs rho  constraints ...
 
 % Consctruct data
 setInputParameters();
-% Preprocessor. Mesh is generated here
-FEModel = PreProcessor(L, nelemns, E, A, freqs, rho, constraints);
-FEModel.setForceFunction(forceGenerator);
-udata = generateData(noiselevel, FEModel, meaLocations);
 
+% Preproc
+nelemns = 100;
+freqs = [1];
+sourceElements = 100;
+sourceFrequency = 1;
 solutionMethod = {'pcg'};
 tikhonovPar =0;
+
+FEModel = PreProcessor(L, nelemns, E, A, freqs, rho, constraints);
+FEModel.setForceFunction(forceGenerator, sourceFrequency);
+udata = generateData(noiselevel, FEModel, meaLocations);
+ x = FEModel.getNodalCoord();
+ utrue = solveForwardProblem(FEModel, 1);
+ ftrue = FEModel.forceMagnitude;
+
+
+FEModel.generateForceMesh(sourceElements);
+FEModel.setForceFunction(forceGenerator, sourceFrequency);
+FEModel.createForceMassMatrix();
+
 tolerance=0:1:10;
 for i=1:length(tolerance)
     pcgTol=10^(-tolerance(i));
